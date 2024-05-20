@@ -9,6 +9,7 @@ import uuid
 
 time = "%d-%m-%YT%H:%M%S.%f"
 
+
 class BaseModel:
 	"""The BaseModel class from which future classes will be derived"""
 	def __init__(self, *args, **kwargs):
@@ -19,19 +20,20 @@ class BaseModel:
 					setattr(self, key, value)
 			if hasattr(self, "created_at") and type(self.created_at) is str:
 				self.created_at = datetime.strptime(kwargs["created_at"], time)
-			if hasattr(self,"updated_at") and type(self.updated_at) is str:
+			if hasattr(self, "updated_at") and type(self.updated_at) is str:
 				self.updated_at = datetime.strptime(kwargs["updated_at"], time)
 		else:
-			self.id = str(uuid.uuid4())			
+			self.id = str(uuid.uuid4())
 			self.created_at = datetime.now()
-			self.updated_at = self.created_at			
+			self.updated_at = self.created_at
 			models.storage.new(self)
 			models.storage.save()
-	
+
 	def __str__(self):
 		"""string representation of the BaseModel clase"""
-		return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id, self.__dict__)
-	
+		return "[{:s}] ({:s}) {}"
+		.format(self.__class__.__name__, self.id, self.__dict__)
+
 	def save(self):
 		"""updates the attribute 'updated_at' with the current datetime"""
 		self.updated_at = datetime.now()

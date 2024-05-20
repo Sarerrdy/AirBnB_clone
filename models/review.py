@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from models.base_model import BaseModel
 
+
 class Review(BaseModel):
 	"""Representation of review"""
 	place_id = ""

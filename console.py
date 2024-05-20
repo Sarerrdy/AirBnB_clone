@@ -16,21 +16,27 @@ from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
-	"""Define the command interpreter console
-	
-	Attributes:
-	prompt (str): The command pprompt
-	"""
+	""" command prompt to access models data """
+	prompt = "(hbnb)"
+	cmd_classes = {
+		"BaseModel": BaseModel,
+		"User": User,
+		"State": State,
+		"City": City,
+		"Place": Place,
+		"Amenity": Amenity,
+		"Review": Review
+		}
 
-	prompt = "(hbnb) "
-	cmd_classes = {"BaseModel": BaseModel, "User":User, "State": State, "City": City,
-			  "Place":Place, "Amenity": Amenity, "Review": Review}
-	
 	def default(self, arg):
 		""" Default behaviour for cmd module when input is invalid"""
-		arg_dict = {"all": self.do_all, "show":self.do_show, "destroy": self.do_destroy,
-			  "count": self.do_count, "update": self.do_update
-		}
+		arg_dict = {
+			"all": self.do_all,
+			"show": self.do_show,
+			"destroy": self.do_destroy,
+			"count": self.do_count,
+			"update": self.do_update
+			}
 		arg = arg.strip()
 		splitted_args = arg.split(".")
 		if len(splitted_args) != 2:
@@ -59,30 +65,27 @@ class HBNBCommand(cmd.Cmd):
 		line = class_name + line
 		if (command in arg_dict.keys()):
 			arg_dict[command](line.strip())
-			
 
 	def do_quit(self, arg):
-		"""Quit command to exit the progam"""
+		""" Quit command to exit the progam """
 		return True
 
 	def do_help(self, arg: str):
 		"""Help command to display available help associated with the program"""
 		return super().do_help(arg)
-	
+
 	def do_EOF(self, arg):
 		"""EOF signal to exit the program"""
 		print("")
 		return True
-	
+
 	def emptyline(self):
 		"""Do nothing upon receiving an empty line."""
 		pass
 
 	def do_create(self, arg):
 		"""command to create new instances of BaseModel Clases
-		
-		structure: create <class name>
-		"""
+		structure: create <class name>"""
 		if not arg:
 			print("** class name missing **")
 			return
@@ -93,11 +96,10 @@ class HBNBCommand(cmd.Cmd):
 		new_obj = HBNBCommand.cmd_classes[toks[0]]()
 		new_obj.save()
 		print(new_obj.id)
-	
+
 	def do_show(self, arg):
-		"""prints the string representation of an instance based on the class name and id
-		
-		structure: show <class name>
+		"""prints the string representation of an instance based on
+		the class name and id structure: show <class name>
 		"""
 		if not arg:
 			print("** class name missing **")
@@ -119,9 +121,7 @@ class HBNBCommand(cmd.Cmd):
 
 	def do_destroy(self, arg):
 		"""Deletes an instance based on the class name and id
-		
-		Structure: destroy <class> <id>
-		"""
+		Structure: destroy <class> <id>	"""
 		if not arg:
 			print("** class name missing **")
 			return
@@ -142,41 +142,18 @@ class HBNBCommand(cmd.Cmd):
 			print("** no instance found **")
 
 	def do_all(self, arg):
-		"""Prints all string representation of all instances based or not on the class name
-		
-		Structure: all <class name> or all or <class name>.all()
-		"""
-		# storage.reload()
-		# my_json = []
-		# objects_dict = storage.all()
-		# if not arg:
-		# 	for key in objects_dict:
-		# 		my_json.append(str(objects_dict[key]))
-		# 		print(json.dumps(my_json))
-		# 		return
-		# token = shlex.split(arg)
-		# if token[0] in HBNBCommand.my_dict.keys():
-		# 	for key in objects_dict:
-		# 		if token[0] in key:
-		# 			my_json.append(str(objects_dict[key]))
-		# 			print(json.dumps(my_json))
-		# 		else:
-		# 			print("** class doesn't exist **")
-
-		storage.reload()	
+		""" Prints all string representation of all instances based or not on the
+		class name. Structure: all <class name> or all or <class name>.all() """
+		storage.reload()
 		all_dicts = storage.all()
 		json_obj = []
 		toks = shlex.split(arg)
-
 		if not arg:
-			for key in all_dicts:				
+			for key in all_dicts:
 				json_obj.append(str(all_dicts[key]))
 				print(json.dumps(json_obj))
-				return			
-		
-		
+				return
 		if toks[0] in HBNBCommand.cmd_classes.keys():
-			
 			for key in all_dicts:
 				if toks[0] in key:
 					json_obj.append(str(all_dicts[key]))
@@ -187,9 +164,7 @@ class HBNBCommand(cmd.Cmd):
 
 	def do_update(self, arg):
 		"""Updates an instance based on the class name and id
-
-		Structure: update <class> <id> <attribute name> <attribute value>
-		"""
+		Structure: update <class> <id> <attribute name> <attribute value> """
 
 		if not arg:
 			print("** class name missing **")
@@ -198,19 +173,19 @@ class HBNBCommand(cmd.Cmd):
 		if toks[0] not in HBNBCommand.cmd_classes.keys():
 			print("** class doesn't exist **")
 			return
-		
+
 		if len(toks) == 1:
 			print("** instant id missing **")
 			return
-		
+
 		if len(toks) == 2:
 			print("** attribute name missing **")
 			return
-		
+
 		if len(toks) == 3 and type(eval(toks[2])) != dict:
 			print("** value missing **")
 			return
-		
+
 		storage.reload()
 		dict_items = storage.all()
 		instance_name = toks[0]
@@ -218,8 +193,6 @@ class HBNBCommand(cmd.Cmd):
 		attr_name = toks[2]
 		attr_value = toks[3]
 		key = instance_name + "." + instance_id
-
-
 		if arg.count('{') != 0:
 			dict_arg = "{" + arg.split("{")[1]
 			dict_arg = dict_arg.replace("\'", "\"")
@@ -237,17 +210,22 @@ class HBNBCommand(cmd.Cmd):
 			if key in dict_items:
 				if hasattr(dict_items[key], attr_name):
 					attr_type = type(getattr(dict_items[key], attr_name))
-					setattr(dict_items[key], attr_name, attr_type(attr_value))			
+					setattr(dict_items[key], attr_name, attr_type(attr_value))
 				else:
 					setattr(dict_items[key], attr_name, attr_value)
 				storage.save()
 			else:
 				print("** no instance found **")
-	
+
 	def do_count(self, arg):
-		pass
-		
-		
+		""" Counts number of instances of a class """
+		counter = 0
+		objects_dict = storage.all()
+		for key in objects_dict:
+			if (arg in key):
+				counter += 1
+		print(counter)
+
 
 if __name__ == "__main__":
-		HBNBCommand().cmdloop()
+	HBNBCommand().cmdloop()

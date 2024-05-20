@@ -10,13 +10,21 @@ from models.review import Review
 from models.state import State
 from models.user import User
 
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-		   "Place": Place, "Review": Review, "State": State, "User": User}
+classes = {
+	"Amenity": Amenity,
+	"BaseModel": BaseModel,
+	"City": City,
+	"Place": Place,
+	"Review": Review,
+	"State": State,
+	"User": User
+	}
 
 
 class FileStorage:
-	"""serializes instances to a JSON file and deserializes same back to instance objects"""
-	
+	"""serializes instances to a JSON file and deserializes same back
+	to instance objects """
+
 	# string - path to the JSON file
 	__file_path = "file.json"
 
@@ -26,7 +34,7 @@ class FileStorage:
 	def all(self):
 		"""returns all dictionary __objects"""
 		return self.__objects
-	
+
 	def new(self, obj):
 		"""sets in __objects the obj with key <obj class name>.id"""
 		if obj is not None:
@@ -40,7 +48,7 @@ class FileStorage:
 			json_objects[key] = self.__objects[key].to_dict()
 		with open(self.__file_path, 'w') as f:
 			json.dump(json_objects, f)
-	
+
 	def reload(self):
 		"""deserializes the JSON file to __objects"""
 		try:
@@ -48,5 +56,5 @@ class FileStorage:
 				jo = json.load(f)
 			for key in jo:
 				self.__objects[key] = classes[jo[key]["__clase__"]](**jo[key])
-		except:
-			pass
+		except FileNotFoundError:
+			return
